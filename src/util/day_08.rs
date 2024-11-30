@@ -1,6 +1,5 @@
 use super::Part;
 
-const DIGITS:[&str;10] = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
 pub fn solve(input : String, part: Part) -> String {
 
@@ -11,11 +10,11 @@ pub fn solve(input : String, part: Part) -> String {
     }
 }
 
-fn part1(lines:Vec<&str>) -> String {
+fn part1(_lines:Vec<&str>) -> String {
     "1".to_string()
 }
 
-fn part2(lines:Vec<&str>) -> String {
+fn part2(_lines:Vec<&str>) -> String {
     "2".to_string()
 }
 
