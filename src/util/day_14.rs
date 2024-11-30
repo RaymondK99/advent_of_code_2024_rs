@@ -24,7 +24,7 @@ fn part2(_lines:Vec<&str>) -> String {
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
-    use util::Part::{Part1, Part2};
+    use super::super::Part::{Part1, Part2};
 
 
     #[test]
