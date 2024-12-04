@@ -211,6 +211,6 @@ mod tests {
     fn test_part2() {
         // to high => 114961848
         let input = include_str!("../../input/input_03.txt");
-        assert_eq!("114961848", solve(input.to_string(), Part2));
+        assert_eq!("106780429", solve(input.to_string(), Part2));
     }
 }
