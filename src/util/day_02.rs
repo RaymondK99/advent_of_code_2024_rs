@@ -30,8 +30,7 @@ fn is_safe(levels:&Vec<u32>) -> bool {
 fn parse(lines:Vec<&str>) -> Vec<Vec<u32>> {
     let mut list = vec![];
     for line in lines {
-        let levels = line.split_ascii_whitespace().into_iter().map(|item| item.parse().unwrap()).collect();
-        list.push(levels);
+        list.push(line.split_ascii_whitespace().into_iter().map(|item| item.parse().unwrap()).collect());
     }
     list
 }
