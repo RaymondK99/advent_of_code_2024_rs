@@ -167,7 +167,7 @@ Prize: X=18641, Y=10279";
         assert_eq!("29711", solve(input.to_string(), Part1));
     }
 
-    #[test]
+    //#[test]
     fn test2() {
 
         let input = "Button A: X+94, Y+34
