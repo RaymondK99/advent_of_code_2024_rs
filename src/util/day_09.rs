@@ -136,7 +136,7 @@ fn get_free_space(file_id:u64, data:&Vec<Block>) -> Option<(usize, usize)> {
 
 fn compact_v2(file_id:u64, data:&mut Vec<Block>) {
 
-    let file_index = data.iter().enumerate().filter(|(i, block)| match block {
+    let file_index = data.iter().enumerate().filter(|(_i, block)| match block {
         Block::FileBlock(id) => *id == file_id,
         Block::Empty => false,
     })
@@ -150,7 +150,7 @@ fn compact_v2(file_id:u64, data:&mut Vec<Block>) {
         }).count();
 
     match get_free_space(file_id, &data) {
-        Some((free_space_index, free_space_size)) => {
+        Some((free_space_index, _free_space_size)) => {
             if free_space_index < file_index {
                 for i in file_index..file_index+file_block_size {
                     // Clear 
@@ -223,7 +223,7 @@ mod tests {
     }
 
     //#[test]
-    fn test_part2() {
+    fn _test_part2() {
         let input = include_str!("../../input/input_09.txt");
         assert_eq!("6287317016845", solve(input.to_string(), Part2));
     }

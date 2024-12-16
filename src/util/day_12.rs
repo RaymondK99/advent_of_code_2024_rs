@@ -55,6 +55,49 @@ impl Region {
         println!("Region[type:{}, pos:{:?}]", self.region_type, self.positions);
     }
 
+
+    fn calc_corner(&self) -> Vec<Position> {
+        let xmin = self.positions.iter().map(|p| p.x).min().unwrap();
+        let xmax = self.positions.iter().map(|p| p.x).max().unwrap()+1;
+        let ymin = self.positions.iter().map(|p| p.y).min().unwrap();
+        let ymax = self.positions.iter().map(|p| p.y).max().unwrap()+1;
+
+        let mut corners = vec![];
+        for y in ymin..=ymax {
+            for x in xmin..=xmax {
+                let down_right = Position{x,y};
+                let up_right = down_right.up();
+                let down_left = down_right.left();
+                let up_left = up_right.left();
+
+                let corner_pos = [&up_left, &up_right, &down_left, &down_right];
+                let bool_vec:Vec<bool> = corner_pos.iter().map(|item| self.contains_position(item))
+                    .collect();
+                let count = bool_vec.iter().filter(|item| **item).count();
+
+
+                println!("x={}, y={}, count = {}", x, y, count);
+
+                if count > 0 && count < 4 {
+                    // possible corner
+                    if count == 2 {
+                        if bool_vec[0] == bool_vec[1] || bool_vec[2] == bool_vec[0] {
+                            // straight line
+                        } else {
+                            // Corner
+                            corners.push(down_right);
+                        }
+                    } else {
+                        // Corner
+                        corners.push(down_right);
+                    }
+                }
+            }    
+        }
+
+        corners
+    }
+
     fn contains_position(&self, pos:&Position) -> bool {
         self.positions.contains(pos)
     }
@@ -111,9 +154,10 @@ impl Map {
         for x in 0..self.width {
             for y in 0..self.height {
                 let pos = Position{x,y};
+                let region_type = *self.grid.get(&pos).unwrap();
+
                 // If it does not belong to a region
-                if !self.is_in_reqion(&pos) {
-                    let region_type = *self.grid.get(&pos).unwrap();
+                if !self.is_in_reqion(&pos, region_type) {
                     // create new region
                     let new_region = self.explore_region(region_type, pos);
                     self.regions.push(new_region);
@@ -160,9 +204,9 @@ impl Map {
 
     }
 
-    fn is_in_reqion(&self, pos:&Position) -> bool {
+    fn is_in_reqion(&self, pos:&Position, region_type:char) -> bool {
         for region in self.regions.iter() {
-            if region.contains_position(pos) {
+            if region.region_type == region_type && region.contains_position(pos) {
                 return true;
             }
         }
@@ -182,8 +226,22 @@ fn part1(lines:Vec<&str>) -> String {
     sum.to_string()
 }
 
-fn part2(_lines:Vec<&str>) -> String {
-    "2".to_string()
+fn part2(lines:Vec<&str>) -> String {
+    let mut map = Map::create(lines);
+    let mut sum = 0;
+    map.explore();
+
+    for region in map.regions.iter() {
+
+        let corners = region.calc_corner();
+        println!("Region:{:?}", region);
+        println!("corners:{:?}", corners);
+        println!("=====> corners:{}", corners.len());
+        sum += corners.len() * region.calc_area() as usize;
+        
+    }
+
+    sum.to_string()
 }
 
 
@@ -220,12 +278,51 @@ MMMISSJEEE";
     #[test]
     fn test2() {
 
-        let input = "";
-        assert_eq!("2", solve(input.to_string(), Part2));
+        let input = "OOOOO
+OXOXO
+OOOOO
+OXOXO
+OOOOO";
+        assert_eq!("436", solve(input.to_string(), Part2));
     }
 
     #[test]
+    fn test21() {
+
+        let input = "AAAA
+BBCD
+BBCC
+EEEC";
+        assert_eq!("80", solve(input.to_string(), Part2));
+    }
+
+    #[test]
+    fn test22() {
+
+        let input = "EEEEE
+EXXXX
+EEEEE
+EXXXX
+EEEEE";
+        assert_eq!("236", solve(input.to_string(), Part2));
+    }
+
+
+   //#[test]
+    fn test23() {
+
+        let input = "AAAAAA
+AAABBA
+AAABBA
+ABBAAA
+ABBAAA
+AAAAAA";
+        assert_eq!("368", solve(input.to_string(), Part2));
+    }
+
+    //#[test]
     fn test_part2() {
+        // too low=883914
         let input = include_str!("../../input/input_12.txt");
         assert_eq!("2", solve(input.to_string(), Part2));
     }

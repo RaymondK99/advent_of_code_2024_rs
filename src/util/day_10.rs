@@ -64,7 +64,6 @@ fn find_height(start:(usize, usize, u8), map:&Vec<Vec<u8>>)  -> u32 {
         // Get neightbours
         let next_nodes = get_next_pos((x,y, height), map);
         for next in next_nodes {
-            let (x,y, _) = next;
             queue.push_back(next);
         } 
     }
