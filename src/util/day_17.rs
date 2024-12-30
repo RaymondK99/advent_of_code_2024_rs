@@ -304,7 +304,7 @@ Program: 0,3,5,4,3,0";
     }
 
     //#[test]
-    fn test_part2() {
+    fn _test_part2() {
         let input = include_str!("../../input/input_17.txt");
         assert_eq!("2", solve(input.to_string(), Part2));
     }

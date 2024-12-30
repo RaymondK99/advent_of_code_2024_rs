@@ -168,7 +168,7 @@ Prize: X=18641, Y=10279";
     }
 
     //#[test]
-    fn test2() {
+    fn _test2() {
 
         let input = "Button A: X+94, Y+34
         Button B: X+22, Y+67
@@ -190,7 +190,7 @@ Prize: X=18641, Y=10279";
     }
 
     //#[test]
-    fn test_part2() {
+    fn _test_part2() {
         // too low => 82525073961064
         let input = include_str!("../../input/input_13.txt");
         assert_eq!("2", solve(input.to_string(), Part2));

@@ -1,4 +1,4 @@
-use std::{cmp::max, collections::{HashSet, VecDeque}, mem::Discriminant};
+use std::{cmp::max, collections::{HashMap, VecDeque}};
 
 use super::Part;
 
@@ -48,27 +48,27 @@ fn parse(lines:Vec<&str>, num_bytes:usize) -> (Vec<Vec<char>>, Vec<(usize,usize)
 }
 
 
-fn bfs(map:&Vec<Vec<char>>) -> Option<i32> {
-    let mut visited = HashSet::new();
+fn bfs(map:&Vec<Vec<char>>) -> Option<Vec<(usize,usize)>> {
+    let mut visited = HashMap::new();
     let mut queue = VecDeque::new();
     let end_x = map.len() -1;
     let end_y = map.len() - 1;
+    let mut distance_to_end = 0;
 
     queue.push_back((0,0,0));
     while !queue.is_empty() {
         let (dist, x, y) = queue.pop_front().unwrap();
 
-        if (x,y) == (end_x, end_y) {
-            return Some(dist);
-        }
-
-        if visited.contains(&(x,y)) {
+        if visited.contains_key(&(x,y)) {
             continue;
         } else {
-            visited.insert((x,y));
+            visited.insert((x,y), dist);
         }
 
-        //println!("Eval dist:{}, x:{},y:{}", dist, x, y);
+        if (x,y) == (end_x, end_y) {
+            distance_to_end = dist;
+            break;
+        }
 
         // Add adjacent positions
         let mut adjacent = vec![];
@@ -91,29 +91,85 @@ fn bfs(map:&Vec<Vec<char>>) -> Option<i32> {
         
     }
 
+    // Did we find a solution?
+    if distance_to_end == 0 {
+        return None;
+    } else {
+        queue.clear();
+    }
+
+    // Get optimal path by back tracking
+    queue.push_back((distance_to_end, end_x, end_y));
+    let mut path = vec![];
+    let mut next_distance = distance_to_end;
+
+    while !queue.is_empty() {
+        let (dist, x, y) = queue.pop_front().unwrap();
+
+        if next_distance != dist {
+            continue;
+        }
+
+        path.push((x,y));
+
+        if x == 0 &&  y == 0 {
+            return Some(path);
+        }
+
+        // Add adjacent positions
+        let mut adjacent = vec![];
+        if x > 0 {
+            adjacent.push((x-1,y));
+        }
+        if x < end_x {
+            adjacent.push((x+1,y));
+        }
+        if y > 0 {
+            adjacent.push((x,y-1));
+        }
+        if y < end_y {
+            adjacent.push((x,y+1));
+        }
+
+        next_distance = dist - 1;
+        adjacent.into_iter()
+            .filter(|pos| visited.contains_key(pos))
+            .filter(|pos| *visited.get(pos).unwrap() == next_distance)
+            .for_each(|(x_next,y_next)| queue.push_back((next_distance, x_next, y_next)));
+
+    }
+    
     None
 }
 
 
+
 fn part1(lines:Vec<&str>, num_bytes:usize) -> String {
     let (map,_) = parse(lines, num_bytes);
-    bfs(&map).unwrap().to_string()
+    let path = bfs(&map).unwrap();
+    let no_steps = path.len() - 1;
+    no_steps.to_string()
 }
 
 fn part2(lines:Vec<&str>, num_bytes:usize) -> String {
     let (mut map,remaining) = parse(lines, num_bytes);
-
+    let mut last_optimal_path = vec![];
     for next_pos in remaining {
         let (x,y) = next_pos;
 
         // Add next byte
         map[y][x] = '#';
 
+        if !last_optimal_path.is_empty() && !last_optimal_path.contains(&(x,y)) {
+            // This does not affect the path
+            continue;
+        }
+
         // Calc distance
         match bfs(&map) {
-            Some(_dist) => {
+            Some(path) => {
                 // Found solution
-                //println!("dist:{}", dist);
+                last_optimal_path = path;
                 continue;
             },
             None => {
