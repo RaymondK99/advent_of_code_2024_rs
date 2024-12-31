@@ -24,100 +24,58 @@ fn parse(lines:Vec<&str>) -> (Vec<&str>, Vec<&str>) {
     (towels, patterns)
 }
 
-fn starts_with(pattern:&str, towel:&str) -> bool {
-    if pattern.len() < towel.len() {
-        return false;
-    }
 
-    for i in 0..towel.as_bytes().len() {
-        if pattern.as_bytes()[i] != towel.as_bytes()[i] {
-            return false;
+fn match_pattern_rec(towels:&Vec<&str>, pattern:&str, index:usize, cache:&mut Vec<i64>) -> i64 {  
+
+    // init cache if needed
+    if cache.is_empty() {
+        for _ in 0..pattern.len() {
+            cache.push(-1);
         }
     }
 
-    true
+    // Check cache if we have a solution
+    if cache[index] != -1 {
+        return cache[index];
+    }
+
+    let mut matches = 0;
+    let current_pattern = &pattern[index..];
+
+    for i in 0..towels.len() {
+        let towel = towels[i];
+
+        if towel.eq(current_pattern) {
+            matches += 1;
+            break;
+        } else if current_pattern.starts_with(&towel){
+            // Match, make rec call
+            let next_index = index + towel.len();
+            matches += match_pattern_rec(towels, pattern, next_index, cache);
+        }
+    }
+
+    // populate cache
+    cache[index] = matches;
+
+    return matches;
 }
 
-fn match_pattern(towels:&Vec<&str>, pattern:&str) -> i32 {
-
-    println!("trying with pattern:{}", pattern);
-    let mut permutations = 0;
-    let mut stack = VecDeque::new();
-    let mut no_solution_index = HashSet::new();
-
-    stack.push_back((0, vec![]));
-
-    while !stack.is_empty() {
-        let (pattern_index, used_towels) = stack.pop_front().unwrap();
-        let mut found_solution = false; 
-
-        if no_solution_index.contains(&pattern_index) {
-            println!("Skip index:{}", pattern_index);
-            continue;
-        }
-
-        if pattern_index == pattern.len() {
-            permutations += 1;
-            continue;
-        }
-
-        let remaining_pattern = &pattern[pattern_index..];
-
-        for i in 0..towels.len() {
-            if used_towels.contains(&i) {
-                //continue;
-            }
-
-            // Try to match a towel to remaining pattern
-            let towel = towels[i];
-            if starts_with(remaining_pattern, towel) {
-
-                //println!("Current pattern:{} matches with towel:{}", remaining_pattern, towel);
-                let next_index = pattern_index + towel.len();
-
-                if no_solution_index.contains(&next_index) {
-                    // No point searching this..
-                } else {
-
-                    let mut next_used_towel_index = used_towels.clone();
-                    next_used_towel_index.push(i);
-                    stack.push_front((next_index, next_used_towel_index));
-                    found_solution = true;
-                }
-            }
-        }
-
-        if !found_solution {
-            // Remember..
-            no_solution_index.insert(pattern_index);
-        }
-    }
-
-    return permutations;
-
-}
 
 fn part1(lines:Vec<&str>) -> String {
     let (towels, patterns) = parse(lines);
-    let mut count = 0;
-    for pattern in patterns {
-        if match_pattern(&towels, pattern) > 0 {
-            count += 1;
-            //break;
-        }
-
-    }
-    count.to_string()
+    patterns.iter()
+        .filter(|pattern| match_pattern_rec(&towels, pattern, 0, &mut vec![]) > 0)
+        .count()
+        .to_string()
 }
 
 fn part2(lines:Vec<&str>) -> String {
     let (towels, patterns) = parse(lines);
-    let mut count = 0;
-    for pattern in patterns {
-        let permutations=  match_pattern(&towels, pattern);
-        count += permutations;
-    }
-    count.to_string()
+    patterns.iter()
+        .map(|pattern| match_pattern_rec(&towels, pattern, 0, &mut vec![]))
+        .sum::<i64>()
+        .to_string()
 }
 
 
@@ -145,11 +103,10 @@ bbrgwb";
         assert_eq!("6", solve(input.to_string(), Part1));
     }
 
-    //#[test]
-    fn _test_part1() {
-        // 399 => too high
+    #[test]
+    fn test_part1() {
         let input = include_str!("../../input/input_19.txt");
-        assert_eq!("1", solve(input.to_string(), Part1));
+        assert_eq!("300", solve(input.to_string(), Part1));
     }
 
     #[test]
@@ -169,9 +126,9 @@ bbrgwb";
         assert_eq!("16", solve(input.to_string(), Part2));
     }
 
-    //#[test]
-    fn _test_part2() {
+    #[test]
+    fn test_part2() {
         let input = include_str!("../../input/input_19.txt");
-        assert_eq!("2", solve(input.to_string(), Part2));
+        assert_eq!("455554739841216", solve(input.to_string(), Part2));
     }
 }
