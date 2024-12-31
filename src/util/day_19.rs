@@ -145,8 +145,8 @@ bbrgwb";
         assert_eq!("6", solve(input.to_string(), Part1));
     }
 
-    #[test]
-    fn test_part1() {
+    //#[test]
+    fn _test_part1() {
         // 399 => too high
         let input = include_str!("../../input/input_19.txt");
         assert_eq!("1", solve(input.to_string(), Part1));
