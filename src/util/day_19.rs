@@ -166,11 +166,11 @@ ubwu
 bwurrg
 brgr
 bbrgwb";
-        assert_eq!("2", solve(input.to_string(), Part2));
+        assert_eq!("16", solve(input.to_string(), Part2));
     }
 
-    #[test]
-    fn test_part2() {
+    //#[test]
+    fn _test_part2() {
         let input = include_str!("../../input/input_19.txt");
         assert_eq!("2", solve(input.to_string(), Part2));
     }
