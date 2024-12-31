@@ -30,7 +30,11 @@ mod tests {
     #[test]
     fn test1() {
 
-        let input = "";
+        let input = "029A
+980A
+179A
+456A
+379A";
         assert_eq!("1", solve(input.to_string(), Part1));
     }
 

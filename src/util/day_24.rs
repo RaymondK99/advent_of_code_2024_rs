@@ -30,7 +30,16 @@ mod tests {
     #[test]
     fn test1() {
 
-        let input = "";
+        let input = "x00: 1
+x01: 1
+x02: 1
+y00: 0
+y01: 1
+y02: 0
+
+x00 AND y00 -> z00
+x01 XOR y01 -> z01
+x02 OR y02 -> z02";
         assert_eq!("1", solve(input.to_string(), Part1));
     }
 

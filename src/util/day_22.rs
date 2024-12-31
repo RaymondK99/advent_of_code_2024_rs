@@ -30,7 +30,16 @@ mod tests {
     #[test]
     fn test1() {
 
-        let input = "";
+        let input = "15887950
+16495136
+527345
+704524
+1553684
+12683156
+11100544
+12249484
+7753432
+5908254";
         assert_eq!("1", solve(input.to_string(), Part1));
     }
 
