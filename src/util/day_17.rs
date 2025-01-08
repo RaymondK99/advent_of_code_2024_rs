@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use super::Part;
 
 
@@ -41,17 +39,17 @@ trait Operation {
 
 }
 
-struct adv;
-struct bxl;
-struct bst;
-struct jnz;
+struct Adv;
+struct Bxl;
+struct Bst;
+struct Jnz;
 
-struct bxc;
-struct out;
-struct bdv;
-struct cdv;
+struct Bxc;
+struct Out;
+struct Bdv;
+struct Cdv;
 
-impl Operation for adv {
+impl Operation for Adv {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         let combo = combo_operand(operand, registers);
         let nominator = registers[0];
@@ -65,14 +63,14 @@ impl Operation for adv {
     }
 }
 
-impl Operation for bxl {
+impl Operation for Bxl {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         registers[1] = operand ^ registers[1];
         *pc += 2;
     }
 }
 
-impl Operation for bst {
+impl Operation for Bst {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         let combo = combo_operand(operand, registers);
         registers[1] = combo % 8;
@@ -81,7 +79,7 @@ impl Operation for bst {
 }
 
 
-impl Operation for jnz {
+impl Operation for Jnz {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         if registers[0] == 0 {
             *pc += 2;
@@ -91,14 +89,14 @@ impl Operation for jnz {
     }
 }
 
-impl Operation for bxc {
+impl Operation for Bxc {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         registers[1] = registers[1] ^ registers[2];
         *pc += 2;
     }
 }
 
-impl Operation for out {
+impl Operation for Out {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         let combo = combo_operand(operand, registers);
         output.push(combo % 8);
@@ -106,7 +104,7 @@ impl Operation for out {
     }
 }
 
-impl Operation for bdv {
+impl Operation for Bdv {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         let combo = combo_operand(operand, registers);
         let nominator = registers[0];
@@ -122,7 +120,7 @@ impl Operation for bdv {
     }
 }
 
-impl Operation for cdv {
+impl Operation for Cdv {
     fn process(&self,operand:i64, registers:&mut [i64;3], output:&mut Vec<i64>, pc:&mut usize) {
         let combo = combo_operand(operand, registers);
         let nominator = registers[0];
@@ -172,14 +170,14 @@ impl OpCodeComputer {
         let op_code = self.program[self.pc];
         let operand = self.program[self.pc + 1];
         let operation:Box<dyn Operation> = match op_code {
-            0 => Box::new(adv{}),
-            1 => Box::new(bxl{}),
-            2 => Box::new(bst{}),
-            3 => Box::new(jnz{}),
-            4 => Box::new(bxc{}),
-            5 => Box::new(out{}),
-            6 => Box::new(bdv{}),
-            7 => Box::new(cdv{}),
+            0 => Box::new(Adv{}),
+            1 => Box::new(Bxl{}),
+            2 => Box::new(Bst{}),
+            3 => Box::new(Jnz{}),
+            4 => Box::new(Bxc{}),
+            5 => Box::new(Out{}),
+            6 => Box::new(Bdv{}),
+            7 => Box::new(Cdv{}),
             _ => panic!(),
         };
         operation.process(operand, &mut self.registers, &mut self.output, &mut self.pc);

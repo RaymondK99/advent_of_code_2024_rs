@@ -1,4 +1,3 @@
-use std::collections::{HashSet, VecDeque};
 
 use super::Part;
 
@@ -47,7 +46,6 @@ fn match_pattern_rec(towels:&Vec<&str>, pattern:&str, index:usize, cache:&mut Ve
 
         if towel.eq(current_pattern) {
             matches += 1;
-            break;
         } else if current_pattern.starts_with(&towel){
             // Match, make rec call
             let next_index = index + towel.len();
@@ -129,6 +127,6 @@ bbrgwb";
     #[test]
     fn test_part2() {
         let input = include_str!("../../input/input_19.txt");
-        assert_eq!("455554739841216", solve(input.to_string(), Part2));
+        assert_eq!("624802218898092", solve(input.to_string(), Part2));
     }
 }
